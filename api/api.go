@@ -8,5 +8,6 @@ func InitRoutes() *gin.Engine {
 	r := gin.Default()
 	LoadUserApi(r)
 	LoadRoleApi(r)
+	LoadCommonApi(r)
 	return r
 }

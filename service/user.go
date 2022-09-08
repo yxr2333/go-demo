@@ -11,8 +11,10 @@ import (
 	"sheep/demo/model"
 	"sheep/demo/security"
 	"sheep/demo/sql"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func DoRegister(c *gin.Context) {
@@ -80,7 +82,7 @@ func DoLogin(c *gin.Context) {
 	// 判断加密后的密码是否匹配
 	// fmt.Printf("pwd: %s, dbPwd: %s\n", pwd, dbUser.Password)
 	if pwd == dbUser.Password {
-		token, err := security.CreateToken(dbUser.ID, dbUser.Username)
+		token, err := security.CreateToken(dbUser.Model.ID, dbUser.Username)
 		if err != nil {
 			fmt.Printf("create token error: %s\n", err.Error())
 			c.JSON(http.StatusOK, common.ErrorReturnWithMsg("分发token失败"))
@@ -105,11 +107,50 @@ func FindAllUsers(c *gin.Context) {
 	var datas []common.UserBaseInfo
 	for _, value := range users {
 		temp := common.UserBaseInfo{
-			ID:         value.ID,
+			ID:         value.Model.ID,
 			Username:   value.Username,
 			UserRoleID: value.UserRoleID,
 		}
 		datas = append(datas, temp)
 	}
 	c.JSON(200, common.SuccessReturnWithMsgAndData("查询成功", datas))
+}
+
+func DeleteOneUser(c *gin.Context) {
+	id := c.Param("id")
+	uid, err := strconv.Atoi(id)
+	if len(id) == 0 || !common.IsNum(id) || err != nil {
+		c.JSON(http.StatusBadRequest, common.ErrorReturnWithMsg("输入正确的编号"))
+		return
+	}
+	result := sql.DB.Delete(&model.User{}, uid)
+	if result.Error != nil {
+		fmt.Printf("delete error: %v", result.Error)
+		return
+	}
+	if result.RowsAffected <= 0 {
+		c.JSON(http.StatusBadRequest, common.SuccessReturnWithMsg("数据不存在"))
+		return
+	}
+	c.JSON(200, common.SuccessReturnWithMsg("删除成功"))
+}
+
+func UpdateUserBaseInfo(c *gin.Context) {
+	data, _ := c.GetRawData()
+	var info common.UserBaseInfo
+	err := json.Unmarshal(data, &info)
+	if err != nil {
+		fmt.Printf("更新时获取数据异常：%v\n", err)
+		return
+	}
+	user := model.User{
+		Model: gorm.Model{
+			ID: info.ID,
+		},
+		Username:   info.Username,
+		UserRoleID: info.UserRoleID,
+	}
+	result := sql.DB.Model(&user).Updates(user)
+	fmt.Println("受影响的行数为：", result.RowsAffected)
+	c.JSON(200, common.SuccessReturnWithMsg("更新成功"))
 }

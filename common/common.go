@@ -91,3 +91,8 @@ func CreatePaginate(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 		return db.Offset(offset).Limit(pageSize)
 	}
 }
+
+func IsNum(s string) bool {
+	_, err := convert.ParseFloat(s, 64)
+	return err == nil
+}
