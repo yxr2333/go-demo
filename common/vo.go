@@ -10,3 +10,8 @@ type UpdateUserBaseInfoParam struct {
 	Username   string `json:"username"`
 	UserRoleID uint   `json:"userRoleId" gorm:"foreignKey: ID"`
 }
+
+type CreateUserIDCardParam struct {
+	BankName string `json:"bankName"`
+	UID      uint   `json:"uid"`
+}

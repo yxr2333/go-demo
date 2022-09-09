@@ -21,5 +21,5 @@ func main() {
 }
 
 func InitTables() {
-	sql.DB.AutoMigrate(&model.UserRole{}, &model.User{})
+	sql.DB.AutoMigrate(&model.UserRole{}, &model.User{}, &model.UserIDCard{})
 }

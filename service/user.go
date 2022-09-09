@@ -154,3 +154,32 @@ func UpdateUserBaseInfo(c *gin.Context) {
 	fmt.Println("受影响的行数为：", result.RowsAffected)
 	c.JSON(200, common.SuccessReturnWithMsg("更新成功"))
 }
+
+func InsertMany(c *gin.Context) {
+	data, _ := c.GetRawData()
+	var users []model.User
+	err := json.Unmarshal(data, &users)
+	if err != nil {
+		fmt.Printf("反序列化异常：%v\n", err)
+		return
+	}
+	sql.DB.Create(&users)
+	c.JSON(200, common.SuccessReturnWithMsg("添加成功"))
+}
+
+func FindOne(c *gin.Context) {
+	uid := c.Param("id")
+	println(uid)
+	id, err := strconv.Atoi(uid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, common.ErrorReturnWithMsg("请输入正确的编号"))
+		return
+	}
+	var user model.User
+	rows := sql.DB.Preload("UserIDCards").Find(&user, id).RowsAffected
+	if rows <= 0 {
+		c.JSON(http.StatusBadRequest, common.ErrorReturnWithMsg("暂未找到对应的信息"))
+		return
+	}
+	c.JSON(200, common.SuccessReturnWithMsgAndData("查询成功", user))
+}

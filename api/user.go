@@ -15,6 +15,8 @@ func LoadUserApi(r *gin.Engine) {
 			normal.POST("/register", service.DoRegister)
 			normal.POST("/login", service.DoLogin)
 			normal.PUT("/up", service.UpdateUserBaseInfo)
+			normal.POST("/add/many", service.InsertMany)
+			normal.GET("/f/one/:id", service.FindOne)
 		}
 		privilege := user.Group("/p", security.JWTAuthMiddleWare())
 		{
