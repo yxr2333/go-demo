@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"sheep/demo/common"
+	"sheep/demo/config"
 	"sheep/demo/model"
 	"sheep/demo/security"
 	"testing"
@@ -53,4 +54,14 @@ func TestCreateToken(t *testing.T) {
 	} else {
 		println(token)
 	}
+}
+
+func TestReadYaml(t *testing.T) {
+	err := config.InitAllConfigs()
+	if err != nil {
+		println(err.Error())
+		return
+	}
+	conf := config.GetOSSConfig()
+	println(conf.SecretID)
 }

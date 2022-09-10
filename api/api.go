@@ -10,5 +10,7 @@ func InitRoutes() *gin.Engine {
 	LoadRoleApi(r)
 	LoadCommonApi(r)
 	LoadCardApi(r)
+	LoadFileApi(r)
+	LoadUserClassApi(r)
 	return r
 }

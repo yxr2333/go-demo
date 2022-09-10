@@ -11,6 +11,13 @@ type User struct {
 	Salt        string       `json:"salt"`
 	UserRoleID  uint         `json:"userRoleId" gorm:"foreignKey: ID"`
 	UserIDCards []UserIDCard `json:"userIdCards"`
+	UserClasses []Class      `json:"userClasses" gorm:"many2many:user_classes;"`
+}
+
+type Class struct {
+	gorm.Model
+	ClassName string `gorm:"uniqueIndex" json:"className"`
+	Users     []User `json:"users" gorm:"many2many:user_classes;"`
 }
 
 type UserRole struct {

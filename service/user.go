@@ -176,7 +176,7 @@ func FindOne(c *gin.Context) {
 		return
 	}
 	var user model.User
-	rows := sql.DB.Preload("UserIDCards").Find(&user, id).RowsAffected
+	rows := sql.DB.Preload("UserIDCards").Preload("UserClasses").Find(&user, id).RowsAffected
 	if rows <= 0 {
 		c.JSON(http.StatusBadRequest, common.ErrorReturnWithMsg("暂未找到对应的信息"))
 		return
